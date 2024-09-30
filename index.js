@@ -445,7 +445,7 @@ async function aggiornaDatabase(){
 };
 
 async function surveyAll(disattiva){
-    const descrizione = `Usiamo questo sondaggio per evitare di intasare le chat, facile e veloce 😉`;
+    const descrizione = `Usiamo questo sondaggio per evitare di intasare le chat, facile e veloce :wink:`;
     try {
         const embed = new Discord.EmbedBuilder()
             .setColor(`#44817e`)
