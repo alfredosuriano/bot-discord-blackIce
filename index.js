@@ -235,7 +235,7 @@ client.on(`messageCreate`, async (msg) => {
     }
 
     //BOT ALERT LEVEL UP
-    else if (mmsg.member.id===`437808476106784770`) {
+    else if (msg.member.id===`437808476106784770`) {
         try {
             if (msg.content.startsWith(`**BotAlertLevelUp`)) {
                 const stringa = msg.content; 
