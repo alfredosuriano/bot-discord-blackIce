@@ -212,7 +212,7 @@ client.on(`messageCreate`, async (msg) => {
     }
 
     //KENA STATUS ALERT
-    else if (msg.channel === chatStaffBots){
+    else if (msg.member.id===`1282998754622046252`){
         try {
             const titolo = `**UPDATE:** `;
             if (msg.content.startsWith(`<:online:`)){
@@ -235,7 +235,7 @@ client.on(`messageCreate`, async (msg) => {
     }
 
     //BOT ALERT LEVEL UP
-    else if (msg.channel === chatStaffBots) {
+    else if (mmsg.member.id===`437808476106784770`) {
         try {
             if (msg.content.startsWith(`**BotAlertLevelUp`)) {
                 const stringa = msg.content; 
