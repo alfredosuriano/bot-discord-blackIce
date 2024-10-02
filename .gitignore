@@ -1,0 +1,21 @@
+# Ignora la cartella node_modules
+node_modules/
+
+# Ignora i file dell'ambiente
+.env
+
+# Ignora il file del database
+database.json
+
+# Ignora i file di configurazione dell'editor
+.vscode/
+.idea/
+
+# Ignora altre cartelle o file che non vuoi nel repository
+.DS_Store
+Thumbs.db
+
+# Ignora file di log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
