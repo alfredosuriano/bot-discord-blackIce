@@ -202,16 +202,16 @@ Speriamo di rivederti presto tra i nostri VIP! <:leaf_black_ice:1276318911545081
 });
 
 client.on(`messageCreate`, async (msg) => {
-    //KENA CHANNEL CLEANER
-    if (msg.channel===chatStaffMusic || msg.channel===chatGeneralMusic || msg.channel===chatVipMusic) {
+    //MUSIC CHANNELS CLEANER
+    if (msg.channel===chatStaffMusic || msg.channel===chatGeneralMusic || msg.channel===chatVipMusic) {    
         try {
             await wait(1_000); 
             if (msg.member.roles.cache.has(roleBots.id) || msg.member.id===`1189273148865138739`) { return; } // 1179471109494669433
             else { await msg.delete(); }
-        } catch (error) { console.error(`Errore durante la pulizia in \`#・music\`:\n`, error);}
-    }
+        } catch (error) { console.error(`Errore durante la pulizia in \`#・music\`:\n`, error);}    
+    } 
 
-    //KENA STATUS ALERT
+    //KENABOT STATUS
     else if (msg.member.id===`1282998754622046252`){
         try {
             const titolo = `**UPDATE:** `;
@@ -231,13 +231,14 @@ client.on(`messageCreate`, async (msg) => {
                 await msg.reply(`<a:a_maintenance:1286432778778448022> Avviso manutenzione inoltrato a tutte le chat \`#・music\``);
                 console.log(`Tutti i Kenabots sono offline.`);
             }
-        } catch (error) { console.error(`Errore durante le comunicazioni di Kena:\n`, error);}
+        } catch (error) { console.error(`Errore durante le comunicazioni di Kena:\n`, error);}    
     }
 
-    //BOT ALERT LEVEL UP
-    else if (msg.member.id===`437808476106784770`) {
-        try {
-            if (msg.content.startsWith(`**BotAlertLevelUp`)) {
+    //ARCANE BOT ALERT
+    else if (msg.member.id===`437808476106784770`){
+        //LEVELING MESSAGES
+        if (msg.content.startsWith(`**BotAlertLevelUp`)) {
+            try {
                 const stringa = msg.content; 
                 const cropped =  stringa.slice(24);
                 const sizeOf = cropped.indexOf('>');
@@ -273,8 +274,20 @@ client.on(`messageCreate`, async (msg) => {
                     await msg.reply(`Nessun ruolo da aggiornare.`);
                     return;
                 }
-            }
-        } catch (error) { console.error(`Errore durante l'assegnazione del nuovo livello:\n`, error);}    
+            } catch (error) { console.error(`Errore durante l'assegnazione del nuovo livello:\n`, error);}
+        } else
+
+        //LEAVERS NOTIFICATION
+        if (msg.content.startsWith(`**AlertLeave`)){
+            try {
+                const stringa = msg.content; 
+                const cropped =  stringa.slice(19);
+                const sizeOf = cropped.indexOf('>');
+                const iDutente = cropped.slice(0, sizeOf);
+                await chatMisbehavior.send(`${iDutente} <@${iDutente}> - ha abbandonato il server`);
+                await msg.reply(`<a:a_goodBye:1291692150634840065>`);
+            } catch (error) { console.error(`Errore durante l'annotazione di un utente che è uscito:\n`, error);}
+        }
     }
 });
 
@@ -394,7 +407,7 @@ client.on(`interactionCreate`, async (interaction) => {
             try {
                 //Team button1
                 if (interaction.customId == `teamButton1`) {    
-                    if (opz1team.includes(utente)) { return await interaction.deferUpdate();}                
+                    if (opz1team.includes(utente)) { return await interaction.deferUpdate();}
                     await opz1team.push(`${utente}`);
                     if (opz2team.includes(utente)) { opz2team = opz2team.filter(elemento => elemento !== utente);}
                     await surveyTeam(false);
