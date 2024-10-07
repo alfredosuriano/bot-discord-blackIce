@@ -407,17 +407,27 @@ client.on(`interactionCreate`, async (interaction) => {
             try {
                 //Team button1
                 if (interaction.customId == `teamButton1`) {    
-                    if (opz1team.includes(utente)) { return await interaction.deferUpdate();}
-                    await opz1team.push(`${utente}`);
-                    if (opz2team.includes(utente)) { opz2team = opz2team.filter(elemento => elemento !== utente);}
+                    if (opz1team.some(indice => indice.slice(5) === utente)) { return await interaction.deferUpdate();}
+                    let team = ``;
+                    if (interaction.member.roles.cache.has('1291479822282784792')) { team = `T1`; } // 1282150210658631733
+                    else if (interaction.member.roles.cache.has('1291479824128409603')) { team = `T2`; } // 1282150274953379871
+                    else if (interaction.member.roles.cache.has('1291479826343137375')) { team = `T3`; } // 1282150320146747533
+                    await opz1team.push(`${team} - ${utente}`);
+                    opz1team.sort((a, b) => a.localeCompare(b));
+                    opz2team = opz2team.filter(indice => indice.slice(5) !== utente);
                     await surveyTeam(false);
                     await interaction.deferUpdate();
                 } else
                 //Team button2
                 if (interaction.customId == `teamButton2`) {    
-                    if (opz2team.includes(utente)) { return await interaction.deferUpdate();}
-                    await opz2team.push(`${utente}`);
-                    if (opz1team.includes(utente)) { opz1team = opz1team.filter(elemento => elemento !== utente);}
+                    if (opz2team.some(indice => indice.slice(5) === utente)) { return await interaction.deferUpdate();}
+                    let team = ``;
+                    if (interaction.member.roles.cache.has('1291479822282784792')) { team = `T1`; } // 1282150210658631733
+                    else if (interaction.member.roles.cache.has('1291479824128409603')) { team = `T2`; } // 1282150274953379871
+                    else if (interaction.member.roles.cache.has('1291479826343137375')) { team = `T3`; } // 1282150320146747533
+                    await opz2team.push(`${team} - ${utente}`);
+                    opz2team.sort((a, b) => a.localeCompare(b));
+                    opz1team = opz1team.filter(indice => indice.slice(5) !== utente);
                     await surveyTeam(false);
                     await interaction.deferUpdate();
                 }
