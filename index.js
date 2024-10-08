@@ -143,7 +143,7 @@ client.on('guildMemberAdd', async member => {
 
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
     // ASSEGNAZIONE VIP
-    if (oldMember.premiumSince === null && newMember.premiumSince !== null) {
+    if (!oldMember.roles.cache.has(`1282050305235878029`) && newMember.roles.cache.has(`1282050305235878029`)) {
         try {
             await newMember.roles.add(roleVip);
             await chatStaffBots.send(`${newMember.user} da ora potenzia il server, aggiunto il ruolo <@&914306641250361394>`);
@@ -178,7 +178,7 @@ Ancora grazie per il tuo supporto! Siamo davvero felici di averti qui in **Breac
         }
     }
     // RIMOZIONE VIP
-    if (oldMember.premiumSince !== null && newMember.premiumSince === null) {
+    if (oldMember.roles.cache.has(`1282050305235878029`) && !newMember.roles.cache.has(`1282050305235878029`)) {
         try {
             await newMember.roles.remove(roleVip);
             chatStaffBots.send(`${newMember.user} ha tolto il potenziamento, rimosso il ruolo <@&914306641250361394>`);
