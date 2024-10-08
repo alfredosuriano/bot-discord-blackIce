@@ -525,6 +525,7 @@ async function surveyAll(disattiva){
 };
 
 async function surveyTeam(disattiva){
+    const teamTags =`<@&1282150210658631733> <@&1282150274953379871> <@&1282150320146747533>`;
     const descrizione = `Usiamo questo sondaggio per evitare di intasare le chat, facile e veloce 😉`; //-----------------------------------------------------
     try {
         const embed = new Discord.EmbedBuilder()
@@ -562,11 +563,11 @@ async function surveyTeam(disattiva){
             return;
         } else {    
             if(sondaggioTeamId == "0") {
-                const sondaggio = await chatBFteams.send({content: `||@everyone||`, embeds: [embed], components: [row]});
+                const sondaggio = await chatBFteams.send({content: `||${teamTags}||`, embeds: [embed], components: [row]});
                 sondaggioTeamId = sondaggio.id;
             } else {
                 const sondaggio = await chatBFteams.messages.fetch(sondaggioTeamId);
-                await sondaggio.edit({content: `||@everyone||`, embeds: [embed], components: [row]});
+                await sondaggio.edit({content: `||${teamTags}||`, embeds: [embed], components: [row]});
             };
             await aggiornaDatabase();
         }    
