@@ -53,11 +53,10 @@ client.on(`ready`, async() => {
     chatStaffBots = breachForce.channels.cache.get(`1179484185283547247`);
     chatStaffMusic = breachForce.channels.cache.get(`1277745013240893521`); 
     chatBots = breachForce.channels.cache.get(`1275857529678725223`);
-    chatGeneralMusic = breachForce.channels.cache.get(`1277742240504086549`);
+    chatMusic = breachForce.channels.cache.get(`1277742240504086549`);
     chatR6logs = breachForce.channels.cache.get(`1185556383022731354`);
     chatMatchmaking = breachForce.channels.cache.get(`1186626757399412796`);
     chatBFteams = breachForce.channels.cache.get(`1286352959264784446`);
-    chatVipMusic = breachForce.channels.cache.get(`1196762766070001736`);
 
     
     //SINCRONIZZAZIONE COL DATABASE
@@ -96,9 +95,9 @@ client.on(`ready`, async() => {
         await surveyForsePeople(`pomeriggio`);
     });
     cron.schedule('00 16 * * *', async () => {
-        titoloTeam = `Chi gioca stasera del team BreachForce?`;
-        await surveyTeam(false); console.log(`Sondaggio team BreachForce creato.`);
-    });    
+        //titoloTeam = `Chi gioca stasera del team BreachForce?`;
+        //await surveyTeam(false); console.log(`Sondaggio team BreachForce creato.`);
+    });
     cron.schedule('30 17 * * *', async () => {
         await surveyAll(true); await wait(3000);
         titoloSond = `Stasera chi gioca a R6?               21:30➝`;
@@ -106,6 +105,9 @@ client.on(`ready`, async() => {
     });
     cron.schedule('30 20 * * *', async () => {
         await surveyForsePeople(`stasera`);
+    });
+    cron.schedule('30 22 * * *', async () => {
+        //await surveyCanPlay();
     });
 });
 
@@ -202,32 +204,21 @@ Speriamo di rivederti presto tra i nostri VIP! <:leaf_black_ice:1276318911545081
 });
 
 client.on(`messageCreate`, async (msg) => {
-    //MUSIC CHANNELS CLEANER
-    if (msg.channel===chatStaffMusic || msg.channel===chatGeneralMusic || msg.channel===chatVipMusic) {    
-        try {
-            await wait(1_000); 
-            if (msg.member.roles.cache.has(roleBots.id) || msg.member.id===`1189273148865138739`) { return; } // 1179471109494669433
-            else { await msg.delete(); }
-        } catch (error) { console.error(`Errore durante la pulizia in \`#・music\`:\n`, error);}    
-    } 
-
     //KENABOT STATUS
-    else if (msg.member.id===`1282998754622046252`){
+    if (msg.member.id===`1282998754622046252`){
         try {
             const titolo = `**UPDATE:** `;
             if (msg.content.startsWith(`<:online:`)){
                 const messaggio = `è di nuovo operativo <a:a_musical_notes:1286420789842939924>`; // <a:a_musical_notes:1286444739318513706>
                 await chatStaffMusic.send(titolo + `<@910965659851178054> ` + messaggio);
-                await chatGeneralMusic.send(titolo + `<@910978145610526761> ` + messaggio);
-                await chatVipMusic.send(titolo + `<@910965623671119942> ` + messaggio);
+                await chatMusic.send(titolo + `<@910978145610526761> ` + messaggio);
                 await msg.reply(`<a:a_musical_notes:1286420789842939924> Avviso risolutorio inoltrato a tutte le chat \`#・music\``);
                 console.log(`Tutti i Kenabots sono tornati online.`);
             }
             else if (msg.content.startsWith(`<:idle:`)){
                 const messaggio = `è temporanemante fuori uso <a:a_maintenance:1286432778778448022>`; // <a:a_maintenance:1286444726773481556>
                 await chatStaffMusic.send(titolo + `<@910965659851178054> ` + messaggio);
-                await chatGeneralMusic.send(titolo + `<@910978145610526761> ` + messaggio);
-                await chatVipMusic.send(titolo + `<@910965623671119942> ` + messaggio);
+                await chatMusic.send(titolo + `<@910978145610526761> ` + messaggio);
                 await msg.reply(`<a:a_maintenance:1286432778778448022> Avviso manutenzione inoltrato a tutte le chat \`#・music\``);
                 console.log(`Tutti i Kenabots sono offline.`);
             }
@@ -236,47 +227,6 @@ client.on(`messageCreate`, async (msg) => {
 
     //ARCANE BOT ALERT
     else if (msg.member.id===`437808476106784770`){
-        //LEVELING MESSAGES
-        if (msg.content.startsWith(`**BotAlertLevelUp`)) {
-            try {
-                const stringa = msg.content; 
-                const cropped =  stringa.slice(24);
-                const sizeOf = cropped.indexOf('>');
-                const iDutente = cropped.slice(0, sizeOf);
-                const utente = breachForce.members.cache.get(iDutente);
-                const livello = stringa.slice(-2);
-                if (livello == ` 5`) {
-                    await utente.roles.remove(roleCommon.id);
-                    await chatBots.send(`<@${utente.id}> è arrivato al ruolo ${roleUncommon}, EZ :champagne:`);
-                    await msg.reply(`Ho aggiornato correttamente il livello a ${roleUncommon}`);
-                    return;
-                }
-                else if (livello == `10`) { 
-                    await utente.roles.remove(roleUncommon.id);
-                    await chatBots.send(`<@${utente.id}> è arrivato al ruolo ${roleRare}, EZ :champagne:`);
-                    await msg.reply(`Ho aggiornato correttamente il livello a ${roleRare}`);
-                    return;
-                } 
-                else if (livello == `15`) {
-                    await utente.roles.remove(roleRare.id);
-                    await chatBots.send(`<@${utente.id}> è arrivato al ruolo ${roleEpic}, EZ :champagne:`);
-                    await msg.reply(`Ho aggiornato correttamente il livello a ${roleEpic}`);
-                    return;
-                }
-                else if (livello == `20`) { 
-                    await utente.roles.remove(roleEpic.id);
-                    await chatBots.send(`<@${utente.id}> è arrivato al ruolo ${roleLegendary}, EZ :champagne:`);
-                    await msg.reply(`Ho aggiornato correttamente il livello a ${roleLegendary}`);
-                    return;
-                }
-                else {
-                    await chatBots.send(`<@${utente.id}> ha raggiunto il livello ${livello}. GG :beers:`);
-                    await msg.reply(`Nessun ruolo da aggiornare.`);
-                    return;
-                }
-            } catch (error) { console.error(`Errore durante l'assegnazione del nuovo livello:\n`, error);}
-        } else
-
         //LEAVERS NOTIFICATION
         if (msg.content.startsWith(`**AlertLeave`)){
             try {
@@ -351,21 +301,8 @@ client.on(`interactionCreate`, async (interaction) => {
 
     // BUTTON
     else if (interaction.isButton()) {
-         // AUDITION
-        if (interaction.customId == `auditionButton`) {
-            try {
-                const auditionRole = breachForce.roles.cache.get(`1281637927839072379`); // 1271510204244033547
-                await interaction.member.roles.add(auditionRole);
-                await chatStaffBots.send({ content: `**AUDITION:** l'utente ${interaction.user} si è candidato per il provino del team.`});
-                await interaction.reply({ content: `Candidatura inviata <a:a_check_mark:1284616858405703803> \n Ora leggi attentamente le istruzioni in <#1270759895586574347>`, ephemeral: true });
-            } catch(error) {
-                console.error(`Errore nell'esecuzione del bottone audition:\n`, error);
-                await interaction.reply({ content: erroremsg, ephemeral: true });
-            }
-        }
-        
         // BOTTONI DI TUTTI
-        else if (interaction.customId.startsWith(`R6`)){
+        if (interaction.customId.startsWith(`R6`)){
             const utente = interaction.user.displayName;
             try {
                 //R6 button1
