@@ -48,7 +48,7 @@ In bocca al lupo! <:leaf_black_ice:1276318911545081916>`);
                 console.log(`Embed-audition generato.`);
                 await interaction.reply({ content: `Done <a:a_check_mark:1284616858405703803>`, ephemeral: true });
             }
-            if ( embed === 'maintenance') {                
+            else if ( embed === 'maintenance') {                
                 const embed = new Discord.EmbedBuilder()
                     .setColor(`#44817e`)
                     .setTitle(`:tools:  MANUTENZIONE`)
@@ -62,7 +62,7 @@ Stay tuned <:leaf_black_ice:1276318911545081916>`);
                 console.log(`Embed-maintenance generato.`);
                 await interaction.reply({ content: `Done <a:a_check_mark:1284616858405703803>`, ephemeral: true });
             }
-            if ( embed === 'rank') {
+            else if ( embed === 'rank') {
                 const embed = new Discord.EmbedBuilder()
                     .setColor(`#44817e`)
                     .setTitle(`<:rainbow6siege:1276490967310139393>  AGGIORNA IL TUO GRADO`)

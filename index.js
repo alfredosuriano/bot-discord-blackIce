@@ -42,21 +42,17 @@ client.on(`ready`, async() => {
     
     breachForce = client.guilds.cache.get(idServer);
     roleBots = breachForce.roles.cache.get(`1277908141836730399`);
-    roleVip = breachForce.roles.cache.get(`914306641250361394`);
-    roleLegendary = breachForce.roles.cache.get(`1272907695250214962`);
-    roleEpic = breachForce.roles.cache.get(`1271959889568338102`);
-    roleRare = breachForce.roles.cache.get(`1271959802947436605`);
-    roleUncommon = breachForce.roles.cache.get(`1271959320753602733`);
-    roleCommon = breachForce.roles.cache.get(`917124098637856778`);
+    roleNewcomer = breachForce.roles.cache.get(`1294449977677975613`);
     
     chatMisbehavior = breachForce.channels.cache.get(`1278395442257989742`);
     chatStaffBots = breachForce.channels.cache.get(`1179484185283547247`);
     chatStaffMusic = breachForce.channels.cache.get(`1277745013240893521`); 
     chatBots = breachForce.channels.cache.get(`1275857529678725223`);
-    chatMusic = breachForce.channels.cache.get(`1277742240504086549`);
+    chatGeneralMusic = breachForce.channels.cache.get(`1277742240504086549`);
     chatR6logs = breachForce.channels.cache.get(`1185556383022731354`);
     chatMatchmaking = breachForce.channels.cache.get(`1186626757399412796`);
     chatBFteams = breachForce.channels.cache.get(`1286352959264784446`);
+    chatPrivateMusic = breachForce.channels.cache.get(`1294429329412849705`);
 
     
     //SINCRONIZZAZIONE COL DATABASE
@@ -121,8 +117,8 @@ client.on('guildMemberAdd', async member => {
             console.log(`È stato aggiunto il ruolo ${roleBots.name} a ${member.user.tag}.`);
             return;
         }
-        await member.roles.add(roleCommon.id);
-        console.log(`Ruolo ${roleCommon.name} assegnato a ${member.displayName}`);
+        await member.roles.add(roleNewcomer.id);
+        console.log(`Ruolo ${roleNewcomer.name} assegnato a ${member.displayName}`);
 
         const idMembro = member.id;
         const ultimi100msg = await chatMisbehavior.messages.fetch({ limit: 100 });
@@ -147,7 +143,6 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
     // ASSEGNAZIONE VIP
     if (!oldMember.roles.cache.has(`1282050305235878029`) && newMember.roles.cache.has(`1282050305235878029`)) {
         try {
-            await newMember.roles.add(roleVip);
             await chatStaffBots.send(`${newMember.user} da ora potenzia il server, aggiunto il ruolo <@&914306641250361394>`);
             const canaleVocale = await newMember.guild.channels.create({
                 name: `${newMember.displayName}'s room`,
@@ -182,7 +177,6 @@ Ancora grazie per il tuo supporto! Siamo davvero felici di averti qui in **Breac
     // RIMOZIONE VIP
     if (oldMember.roles.cache.has(`1282050305235878029`) && !newMember.roles.cache.has(`1282050305235878029`)) {
         try {
-            await newMember.roles.remove(roleVip);
             chatStaffBots.send(`${newMember.user} ha tolto il potenziamento, rimosso il ruolo <@&914306641250361394>`);
 
             const embed = new Discord.EmbedBuilder()
@@ -204,6 +198,15 @@ Speriamo di rivederti presto tra i nostri VIP! <:leaf_black_ice:1276318911545081
 });
 
 client.on(`messageCreate`, async (msg) => {
+    //MUSIC CHANNELS CLEANER
+    if (msg.channel===chatStaffMusic || msg.channel===chatGeneralMusic || msg.channel===chatPrivateMusic) {    
+        try {
+            await wait(1_000); 
+            if (msg.member.roles.cache.has(roleBots.id) || msg.member.id===`1189273148865138739`) { return; } // 1179471109494669433
+            else { await msg.delete(); }
+        } catch (error) { console.error(`Errore durante la pulizia in \`#・music\`:\n`, error);}    
+    } 
+    
     //KENABOT STATUS
     if (msg.member.id===`1282998754622046252`){
         try {
@@ -211,14 +214,16 @@ client.on(`messageCreate`, async (msg) => {
             if (msg.content.startsWith(`<:online:`)){
                 const messaggio = `è di nuovo operativo <a:a_musical_notes:1286420789842939924>`; // <a:a_musical_notes:1286444739318513706>
                 await chatStaffMusic.send(titolo + `<@910965659851178054> ` + messaggio);
-                await chatMusic.send(titolo + `<@910978145610526761> ` + messaggio);
+                await chatGeneralMusic.send(titolo + `<@910978145610526761> ` + messaggio);
+                await chatPrivateMusic.send(titolo + `<@910978145610526761> ` + messaggio);
                 await msg.reply(`<a:a_musical_notes:1286420789842939924> Avviso risolutorio inoltrato a tutte le chat \`#・music\``);
                 console.log(`Tutti i Kenabots sono tornati online.`);
             }
             else if (msg.content.startsWith(`<:idle:`)){
                 const messaggio = `è temporanemante fuori uso <a:a_maintenance:1286432778778448022>`; // <a:a_maintenance:1286444726773481556>
                 await chatStaffMusic.send(titolo + `<@910965659851178054> ` + messaggio);
-                await chatMusic.send(titolo + `<@910978145610526761> ` + messaggio);
+                await chatGeneralMusic.send(titolo + `<@910978145610526761> ` + messaggio);
+                await chatPrivateMusic.send(titolo + `<@910978145610526761> ` + messaggio);
                 await msg.reply(`<a:a_maintenance:1286432778778448022> Avviso manutenzione inoltrato a tutte le chat \`#・music\``);
                 console.log(`Tutti i Kenabots sono offline.`);
             }
@@ -301,6 +306,19 @@ client.on(`interactionCreate`, async (interaction) => {
 
     // BUTTON
     else if (interaction.isButton()) {
+        // AUDITION
+        if (interaction.customId == `auditionButton`) {
+            try {
+                const auditionRole = breachForce.roles.cache.get(`1294449977677975613`);
+                await interaction.member.roles.add(auditionRole);
+                await chatStaffBots.send({ content: `**AUDITION:** l'utente ${interaction.user} si è candidato per il provino del team.`});
+                await interaction.reply({ content: `Candidatura inviata <a:a_check_mark:1284616858405703803> \n Ora leggi attentamente le istruzioni in <#1270759895586574347>`, ephemeral: true });
+            } catch(error) {
+                console.error(`Errore nell'esecuzione del bottone audition:\n`, error);
+                await interaction.reply({ content: erroremsg, ephemeral: true });
+            }
+        }
+        
         // BOTTONI DI TUTTI
         if (interaction.customId.startsWith(`R6`)){
             const utente = interaction.user.displayName;
