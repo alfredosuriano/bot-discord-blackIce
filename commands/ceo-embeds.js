@@ -11,9 +11,10 @@ module.exports = {
             .setDescription('Seleziona quale embed devi generare')
             .setRequired(true)
             .addChoices(
-                { name: 'audition', value: 'audition' },
-                { name: 'maintenance', value: 'maintenance' },
-                { name: 'rank', value: 'rank' })
+                { name: 'audition', value: 'audition'},
+                { name: 'invite', value: 'invite'},
+                { name: 'maintenance', value: 'maintenance'},
+                { name: 'rank', value: 'rank'})
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
@@ -22,7 +23,7 @@ module.exports = {
             const embed = interaction.options.getString('embed');
             const canale = interaction.channel;
             if ( embed === 'audition') {
-                const embed1 = new Discord.EmbedBuilder()
+                const embed = new Discord.EmbedBuilder()
                     .setColor(`#44817e`)
                     .setTitle(`TEAM RANKED`)
                     .setDescription(`
@@ -43,11 +44,43 @@ In bocca al lupo! <:leaf_black_ice:1276318911545081916>`);
                 const row = new Discord.ActionRowBuilder()
                     .addComponents(button);
 
-                await canale.send({ embeds: [embed1], components: [row] });
-
+                await canale.send({ embeds: [embed], components: [row] });
                 console.log(`Embed-audition generato.`);
                 await interaction.reply({ content: `Done <a:a_check_mark:1284616858405703803>`, ephemeral: true });
             }
+
+            else if ( embed === 'invite') {
+                const embed = new Discord.EmbedBuilder()
+            .setColor(`#44817e`)
+            .setTitle(`GENERATORE DI INVITI`)
+            .setDescription(`
+Ormai ho preso possesso di tutto il server, quindi ho disattivato gli inviti :smiling_imp: 
+Ma in fondo mi piace essere in tanti e avere sempre persone nuove da control... 
+Ehm, coccolare :smiling_face_with_3_hearts:
+
+
+**ISTRUZIONI**
+Per ogni invito che crei, ricorda che:
+- è **monouso** (dopo che un utente lo avrà usato, non funzionerà più)
+- sarà valido solo per **10 minuti** (dopo si autodistruggerà)
+- ogni nuovo utente dovrà superare il **provino** prima di visualizzare il server
+
+Quindi se rientri in una delle due condizioni, dovrai generare un nuovo invito.
+Tranquilli non mi stanco, posso farne all'infinto <:leaf_black_ice:1276318911545081916>`);
+
+        const button = new Discord.ButtonBuilder()
+            .setLabel(`GENERA`)
+            .setStyle(Discord.ButtonStyle.Success)
+            .setCustomId(`invitoButton`);
+        
+        const row = new Discord.ActionRowBuilder()
+            .addComponents(button);
+
+        await canale.send({ embeds: [embed], components: [row] });
+        console.log(`Embed-invite generato.`);
+        await interaction.reply({ content: `Done <a:a_check_mark:1284616858405703803>`, ephemeral: true });
+            }
+
             else if ( embed === 'maintenance') {                
                 const embed = new Discord.EmbedBuilder()
                     .setColor(`#44817e`)
@@ -62,6 +95,7 @@ Stay tuned <:leaf_black_ice:1276318911545081916>`);
                 console.log(`Embed-maintenance generato.`);
                 await interaction.reply({ content: `Done <a:a_check_mark:1284616858405703803>`, ephemeral: true });
             }
+
             else if ( embed === 'rank') {
                 const embed = new Discord.EmbedBuilder()
                     .setColor(`#44817e`)
@@ -89,13 +123,12 @@ Ora guarda il tuo profilo <:leaf_black_ice:1276318911545081916>`);
                     .addComponents(rankMenu);
                 
                 await canale.send({ embeds: [embed], components: [row]});
-
                 console.log(`Embed-rank generato.`);
                 await interaction.reply({ content: `Done <a:a_check_mark:1284616858405703803>`, ephemeral: true });
             }
         } catch (error) {
             console.error(`Errore durante la generazione di un emebed:\n`, error);
-            await interaction.reply({ content: `Errore durante la generazione di un emebed.`, ephemeral: true });
+            await interaction.reply({ content: `Errore durante la generazione di un embed.`, ephemeral: true });
         }
     }
 };
