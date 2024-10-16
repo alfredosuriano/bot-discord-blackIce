@@ -42,7 +42,6 @@ let sondaggioTeamId; let opz1team; let opz2team;
 client.on(`ready`, async() => {
     client.user.setActivity(`Looking for new featurs`, { type: ActivityType.Custom });
     console.log(`Logged in as ${client.user.tag}`);
-    oggi = new Date();
     
     breachForce = client.guilds.cache.get(idServer);
     roleBotBlackIce = breachForce.roles.cache.get(`1275447398931632183`);
@@ -112,8 +111,6 @@ client.on(`ready`, async() => {
     cron.schedule('30 22 * * *', async () => {
         //await surveyCanPlay();
     });
-    titoloTeam = `Chi gioca stasera del team BreachForce?`;
-        await surveyTeam(false); console.log(`Sondaggio team BreachForce creato.`);
 });
 
 
@@ -140,8 +137,8 @@ client.on('guildMemberAdd', async member => {
             }
         });
         if (trovato) {
-            await chatStaffBotting.send(avviso);
-            console.log(`È entrato ${member.displayName}, ha la fedina sporca.`);
+            await auditLog.send(avviso);
+            console.log(`È tornato ${member.displayName}, ha la fedina sporca.`);
         }
     } catch (error) {
         console.error(`Errore durante l'assegnazione al nuovo membro:\n`, error);
@@ -240,6 +237,8 @@ client.on(`messageCreate`, async (msg) => {
 });
 
 client.on(`interactionCreate`, async (interaction) => {
+    oggi = new Date(); //updating date
+
     //SLASH COMMANDs
     if (interaction.isCommand()) {
         try{
