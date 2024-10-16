@@ -33,7 +33,7 @@ let breachForce; let auditLog; let roleBotBlackIce; let roleBots; let roleNewcom
 let chatMisbehavior; let chatStaffBotting; let chatStaffMusic; let chatBots; let chatGeneralMusic;
 let chatR6log; let chatMatches; let chatBHF; let chatBHFteam; let chatPrivateMusic;
 
-let dati;
+let dati; let oggi;
 let titoloSond; let sondaggioR6id; let opz1utenti; let opz2utenti; let opz3utenti; 
 let sondaggioTeamId; let opz1team; let opz2team; 
 
@@ -42,13 +42,14 @@ let sondaggioTeamId; let opz1team; let opz2team;
 client.on(`ready`, async() => {
     client.user.setActivity(`Looking for new featurs`, { type: ActivityType.Custom });
     console.log(`Logged in as ${client.user.tag}`);
+    oggi = new Date();
     
     breachForce = client.guilds.cache.get(idServer);
-    auditLog = breachForce.roles.cache.get(`1294946788599664690`);
     roleBotBlackIce = breachForce.roles.cache.get(`1275447398931632183`);
     roleBots = breachForce.roles.cache.get(`1277908141836730399`);
     roleNewcomer = breachForce.roles.cache.get(`1294449977677975613`);
-    
+
+    auditLog = breachForce.channels.cache.get(`1294946788599664690`);
     chatMisbehavior = breachForce.channels.cache.get(`1278395442257989742`);
     chatStaffBotting = breachForce.channels.cache.get(`1179484185283547247`);
     chatStaffMusic = breachForce.channels.cache.get(`1277745013240893521`); 
@@ -111,6 +112,8 @@ client.on(`ready`, async() => {
     cron.schedule('30 22 * * *', async () => {
         //await surveyCanPlay();
     });
+    titoloTeam = `Chi gioca stasera del team BreachForce?`;
+        await surveyTeam(false); console.log(`Sondaggio team BreachForce creato.`);
 });
 
 
@@ -242,7 +245,7 @@ client.on(`interactionCreate`, async (interaction) => {
         try{
             const command = client.commands.get(interaction.commandName);
             if (!command) return
-            command.execute(interaction);
+            command.execute(interaction, auditLog, oggi);
         } catch(error) {
             console.error(`Errore nell'esecuzione di uno slashCommand:\n`, error);
             await interaction.reply({ content: erroremsg, ephemeral: true });
@@ -284,6 +287,9 @@ client.on(`interactionCreate`, async (interaction) => {
                 const selectedRank = interaction.values[0];
                 await interaction.member.roles.add(rankIDmap[selectedRank]);
 
+                const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
+                await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha usato la selezione dei rank.`);
+
                 await interaction.reply({ content: `Il tuo grado è stato aggiornato :flame:`, ephemeral: true });
                 await wait(5_000);
                 await interaction.deleteReply();
@@ -308,6 +314,29 @@ client.on(`interactionCreate`, async (interaction) => {
                 await interaction.reply({ content: erroremsg, ephemeral: true });
             }
         }
+
+        // OSPITE
+        if (interaction.customId == `ospiteButton`) {
+            try {
+                await auditLog.send(`L'utente ${interaction.user} ha appena trasferito ${interaction.user} ad ospite.`);
+                await auditLog.send(interaction.message);
+            } catch(error) {
+                console.error(`Errore nell'esecuzione del bottone ospite:\n`, error);
+                await interaction.reply({ content: erroremsg, ephemeral: true });
+            }
+        };
+
+        // INVITO
+        if (interaction.customId == `invitoButton`) {
+            try {
+                const invito = await breachForce.channels.cache.get(`1270759895586574347`).createInvite({ maxAge: 86400, maxUses: 1});
+                await interaction.reply({ content: `Ecco l'invito che mi hai chiesto: ${invito}`, ephemeral: true });
+                await auditLog.send(`L'utente ${interaction.user} ha appena creato un link d'invito.`);
+            } catch(error) {
+                console.error(`Errore nell'esecuzione del bottone invito:\n`, error);
+                await interaction.reply({ content: erroremsg, ephemeral: true });
+            }
+        };
         
         // BOTTONI DI TUTTI
         if (interaction.customId.startsWith(`R6`)){
@@ -321,6 +350,8 @@ client.on(`interactionCreate`, async (interaction) => {
                     if (opz3utenti.includes(utente)) { opz3utenti = opz3utenti.filter(elemento => elemento !== utente);}
                     await surveyAll(false);
                     await interaction.deferUpdate();
+                    const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
+                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha clickato \`Ci sono\` nel log generale.`);
                 } else
                 //R6 button2
                 if (interaction.customId == `R6button2`) {    
@@ -330,6 +361,8 @@ client.on(`interactionCreate`, async (interaction) => {
                     if (opz3utenti.includes(utente)) { opz3utenti = opz3utenti.filter(elemento => elemento !== utente);}
                     await surveyAll(false);
                     await interaction.deferUpdate();
+                    const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
+                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha clickato \`Non ci sono\` nel log generale.`);
                 } else
                 //R6 button3
                 if (interaction.customId == `R6button3`) {    
@@ -339,6 +372,8 @@ client.on(`interactionCreate`, async (interaction) => {
                     if (opz2utenti.includes(utente)) { opz2utenti = opz2utenti.filter(elemento => elemento !== utente);}
                     await surveyAll(false);
                     await interaction.deferUpdate();
+                    const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
+                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha clickato \`Forse\` nel log generale.`);
                 }
             } catch(error) {
                 console.error(`Errore nell'esecuzione di uno dei bottoni R6:\n`, error);
@@ -362,6 +397,8 @@ client.on(`interactionCreate`, async (interaction) => {
                     opz2team = opz2team.filter(indice => indice.slice(5) !== utente);
                     await surveyTeam(false);
                     await interaction.deferUpdate();
+                    const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
+                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha clickato \`Ci sono\` nel log del Team.`);
                 } else
                 //Team button2
                 if (interaction.customId == `teamButton2`) {    
@@ -375,6 +412,8 @@ client.on(`interactionCreate`, async (interaction) => {
                     opz1team = opz1team.filter(indice => indice.slice(5) !== utente);
                     await surveyTeam(false);
                     await interaction.deferUpdate();
+                    const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
+                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha clickato \`Non ci sono\` nel log del Team.`);
                 }
             } catch(error) {
                 console.error(`Errore nell'esecuzione di uno dei bottoni del team:\n`, error);
@@ -387,7 +426,7 @@ client.on(`interactionCreate`, async (interaction) => {
 
 
 async function everyDayStuff(){
-    let oggi = new Date();
+    oggi = new Date();
     console.log(` `);
     console.log(`Data odierna: ${oggi.toDateString()}`);
 
