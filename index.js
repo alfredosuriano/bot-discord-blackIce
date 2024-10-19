@@ -47,6 +47,10 @@ client.on(`ready`, async() => {
     roleBotBlackIce = breachForce.roles.cache.get(`1275447398931632183`);
     roleBots = breachForce.roles.cache.get(`1277908141836730399`);
     roleNewcomer = breachForce.roles.cache.get(`1294449977677975613`);
+    roleGuest = breachForce.roles.cache.get(`917124098637856778`);
+    roleTeam1 = breachForce.roles.cache.get(`1282150210658631733`);
+    roleTeam2 = breachForce.roles.cache.get(`1282150274953379871`);
+    roleTeam3 = breachForce.roles.cache.get(`1282150320146747533`);
 
     auditLog = breachForce.channels.cache.get(`1294946788599664690`);
     chatMisbehavior = breachForce.channels.cache.get(`1278395442257989742`);
@@ -97,8 +101,12 @@ client.on(`ready`, async() => {
         await surveyForsePeople(`pomeriggio`);
     });
     cron.schedule('00 16 * * *', async () => {
-        titoloTeam = `Chi gioca stasera del team BreachForce?`;
-        await surveyTeam(false); console.log(`Sondaggio team BreachForce creato.`);
+        if (oggi.getDay()==0 || oggi.getDay()==6){
+            await chatBHF.send(`Sondaggi del team disattivati per il fine settimana, torneranno lunedì :wink:`)
+        } else {
+            titoloTeam = `Chi gioca stasera del team BreachForce?`;
+            await surveyTeam(false); console.log(`Sondaggio team BreachForce creato.`);
+        }
     });
     cron.schedule('30 17 * * *', async () => {
         await surveyAll(true); await wait(3000);
@@ -244,7 +252,7 @@ client.on(`interactionCreate`, async (interaction) => {
         try{
             const command = client.commands.get(interaction.commandName);
             if (!command) return
-            command.execute(interaction, auditLog, oggi);
+            command.execute(interaction, breachForce, auditLog, oggi);
         } catch(error) {
             console.error(`Errore nell'esecuzione di uno slashCommand:\n`, error);
             await interaction.reply({ content: erroremsg, ephemeral: true });
@@ -289,7 +297,7 @@ client.on(`interactionCreate`, async (interaction) => {
                 const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
                 await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha usato la selezione dei rank.`);
 
-                await interaction.reply({ content: `Il tuo grado è stato aggiornato :flame:`, ephemeral: true });
+                await interaction.reply({ content: `Il tuo grado è stato aggiornato <a:a_fire:1296241404997009469>`, ephemeral: true });
                 await wait(5_000);
                 await interaction.deleteReply();
             } catch(error) {
@@ -304,10 +312,18 @@ client.on(`interactionCreate`, async (interaction) => {
         // AUDITION
         if (interaction.customId == `auditionButton`) {
             try {
-                const auditionRole = breachForce.roles.cache.get(`1294449977677975613`);
-                await interaction.member.roles.add(auditionRole);
-                await chatStaffBotting.send({ content: `**AUDITION:** l'utente ${interaction.user} si è candidato per il provino del team.`});
-                await interaction.reply({ content: `Candidatura inviata <a:a_check_mark:1284616858405703803> \n Ora leggi attentamente le istruzioni in <#1270759895586574347>`, ephemeral: true });
+                if (interaction.member.roles.cache.has(roleNewcomer.id)) { 
+                    await interaction.reply({ content: `Candidatura già inviata <a:a_check_mark:1284616858405703803>`, ephemeral: true });
+                    return;
+                }
+                else if (interaction.member.roles.cache.has(roleTeam1.id) || interaction.member.roles.cache.has(roleTeam2.id) || interaction.member.roles.cache.has(roleTeam3.id)) {
+                    await interaction.reply({ content: `Ma cosa vuoi? Sei già nel team <a:a_lotOfLaugh:1296555587726868480>`, ephemeral: true });
+                    return;
+                } else {                
+                    await interaction.member.roles.add(roleNewcomer);
+                    await chatStaffBotting.send({ content: `**AUDITION:** l'utente ${interaction.user} si è candidato per il provino del team.`});
+                    await interaction.reply({ content: `Candidatura inviata <a:a_check_mark:1284616858405703803> \n Ora leggi attentamente le istruzioni in <#1270759895586574347>`, ephemeral: true });
+                }
             } catch(error) {
                 console.error(`Errore nell'esecuzione del bottone audition:\n`, error);
                 await interaction.reply({ content: erroremsg, ephemeral: true });
@@ -315,7 +331,7 @@ client.on(`interactionCreate`, async (interaction) => {
         }
 
         // OSPITE
-        if (interaction.customId == `ospiteButton`) {
+        else if (interaction.customId == `ospiteButton`) {
             try {
                 await auditLog.send(`L'utente ${interaction.user} ha appena trasferito ${interaction.user} ad ospite.`);
                 await auditLog.send(interaction.message);
@@ -323,10 +339,10 @@ client.on(`interactionCreate`, async (interaction) => {
                 console.error(`Errore nell'esecuzione del bottone ospite:\n`, error);
                 await interaction.reply({ content: erroremsg, ephemeral: true });
             }
-        };
+        }
 
         // INVITO
-        if (interaction.customId == `invitoButton`) {
+        else if (interaction.customId == `invitoButton`) {
             try {
                 const invito = await breachForce.channels.cache.get(`1270759895586574347`).createInvite({ maxAge: 86400, maxUses: 1});
                 await interaction.reply({ content: `Ecco l'invito che mi hai chiesto: ${invito}`, ephemeral: true });
@@ -335,10 +351,10 @@ client.on(`interactionCreate`, async (interaction) => {
                 console.error(`Errore nell'esecuzione del bottone invito:\n`, error);
                 await interaction.reply({ content: erroremsg, ephemeral: true });
             }
-        };
+        }
         
         // BOTTONI DI TUTTI
-        if (interaction.customId.startsWith(`R6`)){
+        else if (interaction.customId.startsWith(`R6`)){
             const utente = interaction.user.displayName;
             try {
                 //R6 button1
@@ -350,7 +366,7 @@ client.on(`interactionCreate`, async (interaction) => {
                     await surveyAll(false);
                     await interaction.deferUpdate();
                     const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
-                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha clickato \`Ci sono\` nel log generale.`);
+                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha cliccato su \`Ci sono\` nel log generale.`);
                 } else
                 //R6 button2
                 if (interaction.customId == `R6button2`) {    
@@ -361,7 +377,7 @@ client.on(`interactionCreate`, async (interaction) => {
                     await surveyAll(false);
                     await interaction.deferUpdate();
                     const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
-                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha clickato \`Non ci sono\` nel log generale.`);
+                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha cliccato su \`Non ci sono\` nel log generale.`);
                 } else
                 //R6 button3
                 if (interaction.customId == `R6button3`) {    
@@ -372,7 +388,7 @@ client.on(`interactionCreate`, async (interaction) => {
                     await surveyAll(false);
                     await interaction.deferUpdate();
                     const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
-                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha clickato \`Forse\` nel log generale.`);
+                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha cliccato su \`Forse\` nel log generale.`);
                 }
             } catch(error) {
                 console.error(`Errore nell'esecuzione di uno dei bottoni R6:\n`, error);
@@ -397,7 +413,7 @@ client.on(`interactionCreate`, async (interaction) => {
                     await surveyTeam(false);
                     await interaction.deferUpdate();
                     const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
-                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha clickato \`Ci sono\` nel log del Team.`);
+                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha cliccato su \`Ci sono\` nel log del Team.`);
                 } else
                 //Team button2
                 if (interaction.customId == `teamButton2`) {    
@@ -412,7 +428,7 @@ client.on(`interactionCreate`, async (interaction) => {
                     await surveyTeam(false);
                     await interaction.deferUpdate();
                     const ora = oggi.getHours().toString().padStart(2, '0'); const minuto = oggi.getMinutes().toString().padStart(2, '0');
-                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha clickato \`Non ci sono\` nel log del Team.`);
+                    await auditLog.send(`${ora}:${minuto} - L'utente ${interaction.user} ha cliccato su \`Non ci sono\` nel log del Team.`);
                 }
             } catch(error) {
                 console.error(`Errore nell'esecuzione di uno dei bottoni del team:\n`, error);

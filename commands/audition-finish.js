@@ -29,9 +29,9 @@ module.exports = {
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.CreatePublicThreads),
 
-    async execute(interaction) {
+    async execute(interaction, breachForce, auditLog, oggi) {
         try {
-            const canale = interaction.guild.channels.cache.get(`1271900217330896957`);
+            const canale = breachForce.channels.cache.get(`1271900217330896957`);
             const utente = interaction.options.getUser('utente');
             const esito = interaction.options.getString('esito');
             const team = interaction.options.getString('team');
@@ -43,9 +43,9 @@ module.exports = {
             } 
             else if ( esito === 'accettato') { 
                 await canale.send(`Complimenti ${utente} hai superato il provino! Ora fai parte del **Team Ranked** come ${team}`);
-                if      ( team === 'T1') { await interaction.guild.members.cache.get(utente.id).roles.add(`1282150210658631733`); }
-                else if ( team === 'T2') { await interaction.guild.members.cache.get(utente.id).roles.add(`1282150274953379871`); }
-                else if ( team === 'T3') { await interaction.guild.members.cache.get(utente.id).roles.add(`1282150320146747533`); } 
+                if      ( team === 'T1') { await breachForce.members.cache.get(utente.id).roles.add(`1282150210658631733`); }
+                else if ( team === 'T2') { await breachForce.members.cache.get(utente.id).roles.add(`1282150274953379871`); }
+                else if ( team === 'T3') { await breachForce.members.cache.get(utente.id).roles.add(`1282150320146747533`); } 
             }
 
             await interaction.reply({ content: `Risultato di ${utente} comunicato.`});

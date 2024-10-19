@@ -19,7 +19,7 @@ module.exports = {
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
-    async execute(interaction) {
+    async execute(interaction, breachForce, auditLog, oggi) {
         try {
             const embed = interaction.options.getString('embed');
             const canale = interaction.channel;

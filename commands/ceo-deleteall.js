@@ -8,7 +8,7 @@ module.exports = {
         .setDescription('Elimina tutti i messaggi nella chat eccetto quelli attaccati.')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
-    async execute(interaction) {
+    async execute(interaction, breachForce, auditLog, oggi) {
         try {
             const canale = interaction.channel;
             const tuttiMessaggi = await canale.messages.fetch({ limit: 100 });

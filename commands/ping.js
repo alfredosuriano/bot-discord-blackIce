@@ -5,7 +5,7 @@ module.exports = {
         .setName(`ping`)
         .setDescription(`Monitora il ping di lavoro del bot.`),
 
-    async execute(interaction, auditLog, oggi) {
+    async execute(interaction, breachForce, auditLog, oggi) {
         try {
             await interaction.reply({ content:`Pong <a:a_robot:1284627590941773834>\nLavoro con ${interaction.client.ws.ping}ms di ritardo.`, ephemeral: true });
             

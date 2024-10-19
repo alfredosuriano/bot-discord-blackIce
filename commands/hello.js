@@ -5,7 +5,7 @@ module.exports = {
         .setName(`hello`)
         .setDescription(`Ti saluta, ma fai attenzione, è un po' suscettibile...`),
 
-    async execute(interaction, auditLog, oggi) {
+    async execute(interaction, breachForce, auditLog, oggi) {
         try {
             const risposte = [
                 `Ehii :smiling_face_with_3_hearts:`,
