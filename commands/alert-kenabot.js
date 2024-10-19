@@ -37,7 +37,7 @@ module.exports = {
                 await interaction.reply(`<a:a_musical_notes:1286444739318513706> Avviso risolutorio inoltrato a tutte le chat \`#music\``);
             }
         } catch (error) {
-            console.error(`Errore durante la generazione di un emebed:\n`, error);
+            console.error(`Errore durante la generazione degli avvisi musicali:\n`, error);
             await interaction.reply({ content: `Errore durante la generazione degli avvisi musicali.`, ephemeral: true });
         }
     }

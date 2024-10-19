@@ -101,7 +101,9 @@ client.on(`ready`, async() => {
         await surveyForsePeople(`pomeriggio`);
     });
     cron.schedule('00 16 * * *', async () => {
-        if (oggi.getDay()==0 || oggi.getDay()==6){
+        if (oggi.getDay()==0) {
+            return;
+        } else if (oggi.getDay()==6) {
             await chatBHF.send(`Sondaggi del team disattivati per il fine settimana, torneranno lunedì :wink:`)
         } else {
             titoloTeam = `Chi gioca stasera del team BreachForce?`;
@@ -203,29 +205,6 @@ client.on(`messageCreate`, async (msg) => {
             if (msg.member && msg.member.roles.cache.has(roleBots.id) || msg.member.roles.cache.has(roleBotBlackIce.id)) { return; }
             else { await msg.delete(); }
         } catch (error) { console.error(`Errore durante la pulizia in \`#music\`:\n`, error);}    
-    } 
-    
-    //KENABOT STATUS
-    if (msg.member && msg.member.id===`1282998754622046252`){
-        try {
-            const titolo = `**UPDATE:** `;
-            if (msg.content.startsWith(`<:online:`)){
-                const messaggio = `è di nuovo operativo <a:a_musical_notes:1286444739318513706>`;
-                await chatStaffMusic.send(titolo + `<@910965659851178054> ` + messaggio);
-                await chatGeneralMusic.send(titolo + `<@910978145610526761> ` + messaggio);
-                await chatPrivateMusic.send(titolo + `<@910978145610526761> ` + messaggio);
-                await msg.reply(`<a:a_musical_notes:1286444739318513706> Avviso risolutorio inoltrato a tutte le chat \`#music\``);
-                console.log(`Tutti i Kenabots sono tornati online.`);
-            }
-            else if (msg.content.startsWith(`<:idle:`)){
-                const messaggio = `è temporanemante fuori uso <a:a_maintenance:1286444726773481556>`;
-                await chatStaffMusic.send(titolo + `<@910965659851178054> ` + messaggio);
-                await chatGeneralMusic.send(titolo + `<@910978145610526761> ` + messaggio);
-                await chatPrivateMusic.send(titolo + `<@910978145610526761> ` + messaggio);
-                await msg.reply(`<a:a_maintenance:1286444726773481556> Avviso manutenzione inoltrato a tutte le chat \`#music\``);
-                console.log(`Tutti i Kenabots sono offline.`);
-            }
-        } catch (error) { console.error(`Errore durante le comunicazioni di KenaBot:\n`, error);}    
     }
 
     //ARCANE BOT ALERT
@@ -445,9 +424,13 @@ async function everyDayStuff(){
     console.log(` `);
     console.log(`Data odierna: ${oggi.toDateString()}`);
 
-    await surveyAll(true); 
-    await surveyTeam(true);
-    console.log(`Disattivati e resettati i sondaggi.`);    
+    await surveyAll(true);
+    if (oggi.getDay()==0 || oggi.getDay()==6){ 
+        console.log(`Disattivato e resettato il sondaggio.`);
+    } else {
+        await surveyTeam(true);
+        console.log(`Disattivati e resettati i sondaggi.`);
+    }
 };
 
 async function aggiornaDatabase(){
